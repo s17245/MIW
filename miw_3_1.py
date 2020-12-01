@@ -1,4 +1,4 @@
-s17245
+# MIW_3 zad 1, s17245
 
 import random as r
 from math import sqrt
