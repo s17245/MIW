@@ -1,6 +1,6 @@
-# MIW_3 zad 1, s17245
-
+# S17245
 import random as r
+import matplotlib.pyplot as pl
 from math import sqrt
 
 # słownik nazw
@@ -38,6 +38,8 @@ l_przegrane = 0
 l_remis = 0
 
 ost = '33'
+
+tablica_przejść = []
 
 liczba_gier = int(input('wprowadź liczbę rund' + '\n'))
 liczba_rund = liczba_gier
@@ -91,12 +93,15 @@ while(liczba_rund <= liczba_gier):
           )
 # tabela wyników
     if wynik(x,y) == 'przegrana':
+        tablica_przejść.append(-1)
         l_przegrane += 1
     elif wynik(x,y) == 'remis':
+        tablica_przejść.append(0)
         l_remis   += 1
     elif wynik(x,y) == 'wygrana':
+        tablica_przejść.append(1)
         l_wygrane   += 1
-        
+      
     liczba_rund -= 1
     
     print('zostało rund: ' , liczba_rund, '\n')
@@ -105,3 +110,9 @@ while(liczba_rund <= liczba_gier):
         
 # tabela wyników
 print ('\n' + 'wygranych:', l_wygrane, 'przegranych:', l_przegrane, 'remisów:', l_remis)
+
+# tablica przejść
+print('\n' + 'tablica przejść: ', tablica_przejść)
+pl.plot(tablica_przejść)
+pl.ylabel('punktacja')
+pl.show()
