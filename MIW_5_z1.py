@@ -23,8 +23,8 @@ data = np.array([[0,0,0,0,0],
                  [1,1,1,1,1]])
 
 train = np.zeros((8,3))
-resArray = np.zeros((8,2))
-descrData = np.array([["00"]
+
+resArray = np.array([["00"]
                     ,["10"]
                     ,["10"]
                     ,["01"]
@@ -37,22 +37,20 @@ for i in range(8):
     train.itemset((i,0), data[i][0])
     train.itemset((i,1), data[i][1])  
     train.itemset((i,2), data[i][2])
-    resArray.itemset((i,0), data[i][3])
-    resArray.itemset((i,1), data[i][4])
-print(descrData)
+    #resArray.itemset((i,0), data[i][3])
+    #resArray.itemset((i,1), data[i][4])
+print("ładowanie danych i przystąpienie do wykonywania programu")
 
 #przypisanie typu danych
-data=data.astype("float64")
+train=train.astype("float64")
+
 #określenie unikalnych wartości opisowych
-descrData= LabelEncoder().fit_transform(descrData)
+descrData= LabelEncoder().fit_transform(resArray)
 
-#podział na dane treningowe i testowe 1/3
-data_train, data_test, descrData_train, descrData_test = train_test_split(data,descrData, test_size=0.33)
+# brak podziału na dane treningowe i testowe
+#data_train, data_test, descrData_train, descrData_test = train_test_split(data,descrData, test_size=0.33)
 
-train_shape = data_train.shape[1]
-
-#print(data)
-#print(descData)
+train_shape = train.shape[1]
 
 model = Sequential()
 # print(model) importy działają
@@ -61,13 +59,13 @@ model = Sequential()
 model.add(Dense(3, activation='relu', kernel_initializer='he_normal', input_shape=(train_shape,)))
 
 # warstwa ukryta
-model.add(Dense(2, activation='relu', kernel_initializer='he_normal'))
+model.add(Dense(3, activation='relu', kernel_initializer='he_normal'))
 
 # warstwa wyjściowa (softmax wynik prawdopodobieństa, że obiekt jest klasyfikowany w danej klasie (1-3))
-model.add(Dense(1, activation='softmax'))
+model.add(Dense(4, activation='softmax'))
 
 # przygotowanie modelu do przeliczenia, algorytm optymalizujący - adam, fukncja crossentropy
-model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
 # sparse_categorical_crossentropy
 # categorical_crossentropy
@@ -75,16 +73,16 @@ model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accur
 
 # wrzucenie danych treningowych, 150 cykli
 history = History()
-model.fit(data_train, descrData_train, epochs=10000, batch_size=32, verbose=0,callbacks=[history],shuffle=True)
-#print(history.history)
+model.fit(train, descrData, epochs=10000, batch_size=64, verbose=0,callbacks=[history] ,shuffle=True)
+
 # sprawdzenie na zbiorze testowym
-loss, acc = model.evaluate(data_test, descrData_test, verbose=0)
+loss, acc = model.evaluate(train, descrData, verbose=0)
 
 
 # wyniki
 print("dokładność: ","\n",round(acc,4))
 print("błędy","\n",round(loss,4))
-#print(model.summary())
+print(model.summary())
 
 
 # wagi warstwy wejściowej
@@ -104,8 +102,9 @@ print("tablica błędów:")
 pp.plot(lossGraph)
 pp.show()
 
-print(acc)
-print(model.summary())
-#row = [1,1,0]
-#yhat = model.predict([row])
-#print(yhat)
+for i in range(descrData.size):
+    print("unikalna wartość opisowa: "
+          ,descrData[i]
+          , " przewidywanie sieci: "
+          , model.predict(np.array([train[i]])))
+
